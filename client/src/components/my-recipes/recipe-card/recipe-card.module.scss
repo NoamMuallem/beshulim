@@ -1,0 +1,13 @@
+.RecipeCard {
+  margin: auto;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.None {
+  white-space: nowrap;
+  &:hover {
+    cursor: auto;
+  }
+}

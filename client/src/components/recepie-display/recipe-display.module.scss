@@ -1,0 +1,80 @@
+.Container {
+  margin: auto auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+
+  @media only screen and (min-width: 500px) {
+    width: 400px;
+  }
+
+  @media only screen and (min-width: 700px) {
+    width: 600px;
+  }
+
+  @media only screen and (min-width: 900px) {
+    width: 800px;
+  }
+
+  img {
+    width: 90%;
+    margin: 20px 5%;
+  }
+
+  .Headline {
+    color: #f9d56e;
+    text-align: center;
+    font-size: 3rem;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .ImagAndTags {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: space-between;
+
+    .Tags {
+      margin: auto;
+      height: fit-content;
+      flex-wrap: wrap;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      * {
+        margin: 0.75rem;
+        width: auto;
+      }
+    }
+
+    img {
+      margin: auto;
+      margin-bottom: 10px;
+
+      @media only screen and (min-width: 500px) {
+        max-width: 400px;
+      }
+    }
+  }
+
+  .Buttons {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .Description {
+    white-space: pre-line;
+    font-size: 1.5rem;
+    width: 80%;
+    text-align: right;
+  }
+}

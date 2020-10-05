@@ -1,0 +1,79 @@
+// Enabling shadows and gradients
+$enable-shadows: true;
+$enable-gradients: true;
+
+//Changing the body background and text
+$body-bg: #f3ecc2;
+$body-color: #151417;
+
+//Changing the theme colors
+$primary: #f9d56e;
+$secondary: #7887f5;
+$success: #7eaf63;
+$info: #495dff;
+$warning: #151417;
+$danger: #ff293a;
+$light: #dfe6ee;
+$dark: #14b1ab;
+
+//dropdown overwride
+$dropdown-border-radius: 0.5rem;
+$dropdown-bg: #b8ddcb;
+
+//modals overwrides
+$modal-inner-padding: 1rem !default;
+
+// Margin between elements in footer, must be lower than or equal to 2 * $modal-inner-padding
+$modal-footer-margin-between: auto;
+
+$modal-dialog-margin: 0;
+$modal-dialog-margin-y-sm-up: 0;
+
+$modal-content-bg: $dark;
+$modal-content-border-color: #000000;
+$modal-content-border-width: 2px;
+
+// Quickly modify global styling by enabling or disabling optional features.
+$enable-caret: true;
+$enable-rounded: true;
+$border-radius: 0.525rem;
+$enable-shadows: true;
+$enable-gradients: true;
+$enable-transitions: true;
+$enable-prefers-reduced-motion-media-query: true;
+$enable-grid-classes: true;
+$enable-pointer-cursor-for-buttons: true;
+$enable-print-styles: true;
+$enable-responsive-font-sizes: true;
+$enable-validation-icons: true;
+$enable-deprecation-messages: false;
+
+//ALERTS -> MY TAGS
+$alert-padding-y: 0.25rem;
+$alert-padding-x: 0.45rem;
+$alert-margin-bottom: 1rem;
+$alert-border-radius: 1rem;
+$alert-border-width: 3px;
+
+@import "~bootstrap/scss/bootstrap";
+
+body {
+  margin: 0;
+  font-family: "Varela Round", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #feffe4;
+  margin-bottom: 2rem;
+}
+
+body * {
+  text-align: right;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}

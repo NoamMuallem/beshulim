@@ -181,7 +181,7 @@ const MyRecipes: React.SFC<MyRecipesProps> = (props) => {
         </div>
       ) : null}
 
-      <CardColumns style={{ maxWidth: "100%" }}>
+      <CardColumns style={{ width: "100%" }}>
         {matchSearchRecipes.map((recipe) => (
           <RecipeCard key={recipe._id} recipe={recipe} />
         ))}

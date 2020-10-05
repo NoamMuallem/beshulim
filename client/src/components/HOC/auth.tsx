@@ -2,6 +2,7 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { selectIsAuthenticated } from "../../redux/selectors/auth.selectors";
 import React from "react";
+import Hompage from "../welcome/welcome.component";
 
 interface ProtectedRouteProps {
   isAuthenticated: boolean | null;
@@ -12,17 +13,7 @@ const ProtectedRoute = ({
   Component,
   isAuthenticated,
 }: ProtectedRouteProps) => {
-  return (
-    <>
-      {isAuthenticated ? (
-        Component
-      ) : (
-        <div style={{ margin: "auto", fontSize: "2rem", color: "red" }}>
-          נא להתחבר
-        </div>
-      )}
-    </>
-  );
+  return <>{isAuthenticated ? Component : <Hompage />}</>;
 };
 
 const mapStateToProps = createStructuredSelector({

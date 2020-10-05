@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "a recipe crud app based on the mern stack",
   "main": "index.js",
+  "engines": {
+    "node": "14.12"
+  },
   "scripts": {
     "client-install": "cd client && npm install",
     "start": "node server.js",

@@ -1,15 +1,9 @@
 import * as React from "react";
-import { Jumbotron, Button } from "react-bootstrap";
-import classes from "./welcome.module.scss";
+import { Jumbotron } from "react-bootstrap";
 
 export interface WelcomeProps {}
 
 const Welcome: React.SFC<WelcomeProps> = () => {
-  const dots = [
-    "לשמור את כל המתכונים שלא רוצים לאבד",
-    "למצוא בקלות מתכונים לפי נושאים ולפי שמות",
-  ];
-
   return (
     <Jumbotron>
       <h1>בישולים</h1>

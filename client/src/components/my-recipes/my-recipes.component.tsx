@@ -94,7 +94,9 @@ const MyRecipes: React.SFC<MyRecipesProps> = (props) => {
 
   //when available tags change, set new Tag to the first available tag
   useEffect(() => {
-    setSelectedTag(Object.keys(tagsToDisplay)[0]);
+    setSelectedTag(
+      Object.keys(tagsToDisplay).sort((a, b) => (a < b ? -1 : b < a ? 1 : 0))[0]
+    );
   }, [tagsToDisplay]);
 
   return (
@@ -131,16 +133,18 @@ const MyRecipes: React.SFC<MyRecipesProps> = (props) => {
                   setSelectedTag(e.target.value);
                 }}
               >
-                {Object.keys(tagsToDisplay).map((tag) => (
-                  <option
-                    disabled={
-                      props.selectedTagsArray.includes(tag) ? true : false
-                    }
-                    key={`${tag}select`}
-                  >
-                    {tag}
-                  </option>
-                ))}
+                {Object.keys(tagsToDisplay)
+                  .sort((a, b) => (a < b ? -1 : b < a ? 1 : 0))
+                  .map((tag) => (
+                    <option
+                      disabled={
+                        props.selectedTagsArray.includes(tag) ? true : false
+                      }
+                      key={`${tag}select`}
+                    >
+                      {tag}
+                    </option>
+                  ))}
               </Form.Control>
               <Button
                 as={FontAwesome}

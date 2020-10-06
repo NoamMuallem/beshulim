@@ -30,7 +30,10 @@ const uiReducer = (state: State = INITIAL_STATE, action: any) => {
     case UiActionTypes.SET_FILTER_TAGS:
       return {
         ...state,
-        selectedFilterTags: [...action.payload],
+        //sort by name
+        selectedFilterTags: [...action.payload].sort((a, b) =>
+          a < b ? -1 : b < a ? 1 : 0
+        ),
       };
 
     case UiActionTypes.SET_SEARCH_FILED:

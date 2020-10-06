@@ -28,14 +28,14 @@ const Tags: React.SFC<TagsProps> = ({
 
   useEffect(() => {
     if (userTags.length > 0) {
-      setSelectedTag(userTags[0]);
+      setSelectedTag(userTags.sort((a, b) => (a < b ? -1 : b < a ? 1 : 0))[0]);
     }
   }, [userTags]);
 
   const removeTag = (tag: string) => {
     const oldTags = tagsArray;
     const newTags = oldTags.filter((oldTag) => oldTag !== tag);
-    setTagsArray(newTags);
+    setTagsArray(newTags.sort((a, b) => (a < b ? -1 : b < a ? 1 : 0)));
   };
 
   return (

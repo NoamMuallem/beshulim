@@ -19,7 +19,7 @@ const AddImage: React.SFC<AddImageProps> = ({
       const compress = new Compress();
 
       await compress
-        .compress([files[files.length - 1]], {
+        .compress([files[0]], {
           size: 0.19, // the max size in MB, defaults to 2MB
           quality: 0.95, // the quality of the image, max is 1,
           maxWidth: 250, // the max width of the output image, defaults to 1920px
@@ -45,6 +45,15 @@ const AddImage: React.SFC<AddImageProps> = ({
           onChange={async (e: any) => onDrop(e.target.files)}
           accept="image/*"
         />
+        {image ? (
+          <Button
+            style={{ marginTop: "0.5rem" }}
+            onClick={() => setImage(null)}
+            variant="danger"
+          >
+            מחק
+          </Button>
+        ) : null}
       </div>
       {image ? <img src={image!} alt="" /> : null}
       <Button

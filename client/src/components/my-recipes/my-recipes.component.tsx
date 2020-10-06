@@ -161,9 +161,7 @@ const MyRecipes: React.SFC<MyRecipesProps> = (props) => {
             {props.selectedTagsArray.map((tag) => (
               <Alert
                 key={`${tag}tags`}
-                style={{
-                  fontSize: "1rem",
-                }}
+                className={classes.Tag}
                 variant="dark"
                 onClose={() => {
                   props.setSelectedTags([

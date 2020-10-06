@@ -35,6 +35,13 @@
     align-items: center;
     flex-wrap: wrap;
 
+    .Tag {
+      font-size: 1rem;
+      * {
+        margin: 0px;
+      }
+    }
+
     * {
       margin: 0.5rem;
     }

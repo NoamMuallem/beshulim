@@ -105,7 +105,11 @@ router.delete("/:id", auth, async (req, res) => {
 router.patch("/:id", auth, upload.any(), async (req, res) => {
   try {
     let data = JSON.parse(req.body.data);
-    data = { ...data, tags: Object.keys(data.tags) };
+    data = {
+      ...data,
+      tags: Object.keys(data.tags),
+      ...(req.body.image ? { image: req.body.image } : { image: null }),
+    };
     let recipe = await Recipe.findById(req.params.id);
     //check if tags are changed
     let sameTags = true;

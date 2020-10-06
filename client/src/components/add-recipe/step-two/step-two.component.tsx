@@ -115,10 +115,8 @@ const Tags: React.SFC<TagsProps> = ({
       <div className={classes.Tags}>
         {tagsArray.map((tag) => (
           <Alert
+            className={classes.Tag}
             key={`${tag}tags`}
-            style={{
-              fontSize: "1rem",
-            }}
             variant="dark"
             onClose={() => removeTag(tag)}
             dismissible

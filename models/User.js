@@ -5,17 +5,6 @@ const Recipe = require("./Recipe");
 const { sendEmailVerification } = require("../emails/send-email");
 require("dotenv").config();
 
-const TagSchema = new mongoose.Schema({
-  tagName: {
-    type: String,
-    required: true,
-  },
-  amount: {
-    type: Number,
-    default: 1,
-  },
-});
-
 // Create Schema
 const UserSchema = new mongoose.Schema({
   name: {
@@ -35,10 +24,6 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  tags: {
-    type: { String: TagSchema },
-  },
-
   register_date: {
     type: Date,
     default: Date.now,

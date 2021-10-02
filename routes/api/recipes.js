@@ -4,6 +4,7 @@ const Recipe = require("../../models/Recipe");
 const router = Router();
 const upload = require("../../middleware/image-upload");
 const User = require("../../models/User");
+const Tag = require("../../models/Tag");
 require("dotenv").config();
 
 /**
@@ -18,22 +19,7 @@ router.get("/", auth, async (req, res) => {
       .populate({ path: "recipes", options: { sort: { date: -1 } } })
       .execPopulate();
 
-    //converting array of recipes to object of recipes - needs to be searchable
-    const recipes = {};
-    req.user.recipes.forEach((recipe) => {
-      //converting array of tags to object of tags - needs to be searchable
-      let tags = {};
-      recipe._doc.tags.forEach((tag) => (tags[tag] = ""));
-      let cpy = { ...recipe._doc, tags };
-      recipes[recipe._doc._id] = cpy;
-    });
-    //converting to array of user tags names - needs to be an array (mainly iterating over it)
-    const userTagsNames = Object.keys(req.user.tags);
-    const response = {
-      recipes: recipes,
-      tags: userTagsNames,
-    };
-    res.send(response);
+    res.send(req.user.recipes);
   } catch (e) {
     res.status(500).send({ msg: e.message });
   }
@@ -41,7 +27,7 @@ router.get("/", auth, async (req, res) => {
 
 /**
  * @route   POST api/recipes
- * @desc    Create An Recipe
+ * @desc    Create A Recipe
  * @access  Private
  */
 
@@ -51,25 +37,31 @@ router.post("/", auth, upload.any(), async (req, res) => {
       //error rendered in client
       throw new Error("");
     }
-    const data = JSON.parse(req.body.data);
-    const recipeTags = Object.keys(data.tags);
-    delete data.tags;
+    //updating tags
+    const data = req.body.data;
+    const recipeTags = data.tags;
+    const dbWrits = [];
     let recipe = new Recipe({
       ...data, //copy over all the fields from req.body to the object
       tags: recipeTags,
-      ...(req.body.image ? { image: req.body.image } : {}),
+      ...(req.body.image && { image: req.body.image }),
       owner: req.user._id,
     });
-    recipe = await recipe.save();
-    await Recipe.addTagsToUser(recipe, req.user);
-    //the client gets an object of tagName:""
-    tags = {};
-    recipe.tags.forEach((tag) => {
-      tags[tag] = "";
+    dbWrits.push(recipe.save());
+    const response = { recipe: { ...recipe._doc } };
+    recipeTags.forEach((tag) => {
+      dbWrits.push(
+        Tag.findOneAndUpdate(
+          { name: tag },
+          { $inc: { count: 1 } },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        )
+      );
     });
-    //to get updated version of userTags
-    const user = await User.findById(req.user._id);
-    const response = { recipe: { ...recipe._doc, tags }, userTags: user.tags };
+    await Promise.allSettled(dbWrits);
     res.status(201).send(response);
   } catch (e) {
     res.status(400).send({ msg: e.message });
@@ -85,12 +77,27 @@ router.post("/", auth, upload.any(), async (req, res) => {
 router.delete("/:id", auth, async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
+    if (!recipe) {
+      throw new Error("Recipe coul'd not be found");
+    }
+    const dbWrits = [];
     //await recipe.removeTagsFromUser(req.user);
-    await recipe.remove();
-    await Recipe.removeTagsFromUser(recipe, req.user);
-    //to get updated version of userTags
-    const user = await User.findById(req.user._id);
-    const response = { userTags: user.tags, _id: req.params.id };
+    dbWrits.push(recipe.remove());
+    const tagsToDecrement = recipe.tags;
+    recipe.tags.forEach((tag) => {
+      dbWrits.push(
+        Tag.findOneAndUpdate(
+          { name: tag },
+          { $inc: { count: -1 } },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        )
+      );
+    });
+    await Promise.allSettled(dbWrits);
+    const response = { _id: req.params.id };
     res.send(response);
   } catch (e) {
     res.status(400).send({ msg: e.message });
@@ -104,44 +111,62 @@ router.delete("/:id", auth, async (req, res) => {
  */
 router.patch("/:id", auth, upload.any(), async (req, res) => {
   try {
-    let data = JSON.parse(req.body.data);
+    let data = req.body.data;
+    //get current recipe
+    let recipe = await Recipe.findById(req.params.id);
+    if (!recipe) {
+      throw new Error("no recipe found!");
+    }
+    //list of current tags
+    const currentTags = recipe.tags;
+    //list of new tags
+    const newTags = req.body.data.tags;
+    //all change in tags
+    let tagsDiffrent = [
+      ...currentTags.filter((x) => !newTags.includes(x)),
+      ...newTags.filter((x) => !currentTags.includes(x)),
+    ];
+    //what is not in tagsDiff and current currentTags needs to be
+    let tagsToAdd = tagsDiffrent.filter((x) => !currentTags.includes(x));
+    //what is not in currentTags and current currentTags needs to be
+    let tagsToDelete = tagsDiffrent.filter((x) => !newTags.includes(x));
+
+    const dbWrits = [];
+    tagsToDelete.forEach((tag) => {
+      dbWrits.push(
+        Tag.findOneAndUpdate(
+          { name: tag },
+          { $inc: { count: -1 } },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        )
+      );
+    });
+
+    tagsToAdd.forEach((tag) => {
+      dbWrits.push(
+        Tag.findOneAndUpdate(
+          { name: tag },
+          { $inc: { count: 1 } },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        )
+      );
+    });
+
+    //update recipe fields
     data = {
       ...data,
-      tags: Object.keys(data.tags),
       ...(req.body.image ? { image: req.body.image } : { image: null }),
     };
-    let recipe = await Recipe.findById(req.params.id);
-    //check if tags are changed
-    let sameTags = true;
-    //if the two tags array have the same size
-    if (data.tags.length === recipe.tags.length) {
-      //iterate over all the elements of one of the arrays
-      for (let i = 0; i < data.tags.length && sameTags; i++) {
-        //if the element i in the other array
-        if (!recipe.tags.includes(data.tags[i])) {
-          sameTags = false;
-        }
-      }
-    } else {
-      sameTags = false;
-    }
-    //if tags have changeg
-    if (!sameTags) {
-      await Recipe.removeTagsFromUser(recipe, req.user);
-    }
     Object.keys(data).forEach((update) => (recipe[update] = data[update]));
-    if (!sameTags) {
-      await Recipe.addTagsToUser(recipe, req.user);
-    }
-    recipe = await recipe.save();
-    tags = {};
-    recipe.tags.forEach((tag) => {
-      tags[tag] = "";
-    });
-    //to get updated version of userTags
-    const user = await User.findById(req.user._id);
-    const response = { recipe: { ...recipe._doc, tags }, userTags: user.tags };
-    res.status(201).send(response);
+    dbWrits.push(recipe.save());
+    await Promise.allSettled(dbWrits);
+    res.status(201).json({ recipe });
   } catch (e) {
     res.status(400).json({ msg: e.message });
   }

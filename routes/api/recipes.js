@@ -35,7 +35,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
   try {
     if (!req.user.confirmed) {
       //error rendered in client
-      throw new Error("");
+      throw new Error("user did not confirm email address");
     }
     //updating tags
     const data = req.body.data;

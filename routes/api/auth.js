@@ -15,7 +15,7 @@ const bcrypt = require("bcryptjs");
  * @access  Public
  */
 
-kouter.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   let user = await User.findOne({ email });
   try {

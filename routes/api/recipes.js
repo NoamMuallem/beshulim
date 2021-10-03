@@ -13,10 +13,33 @@ require("dotenv").config();
  * @access  Private
  */
 
+//Get /tasks?completed=true
+//Get /tasks?limit=10&skip=3(page 3, 10 resolts=> show 20-29)
+//Get /tasks?sortBy=createdAt:asc/desc
 router.get("/", auth, async (req, res) => {
+  const match = {};
+  const sort = {};
+
+  if (req.query.text) {
+    //  //we get a string from req.query.completed, if the string equals to the string 'true'
+    //  //we will save that value and use that
+    //  //if nothing was provided we will get null and not populate match, so we will get all the tasks we have
+    match.$text = { $search: req.query.text };
+  }
+
+  //if (req.query.sortBy) {
+  //  const parts = req.query.sortBy.split(":");
+  //  //sort by unknown field, accessing it with[], short if statmant to assighn 1 or -1 depending on the str in part[1]
+  //  sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  //}
+
   try {
     await req.user
-      .populate({ path: "recipes", options: { sort: { date: -1 } } })
+      .populate({
+        path: "recipes",
+        options: { sort: { date: -1 } },
+        match,
+      })
       .execPopulate();
 
     res.send(req.user.recipes);

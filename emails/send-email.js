@@ -9,7 +9,7 @@ const sendEmailVerification = async (user) => {
     to: user.email,
     from: "thedude072@gmail.com",
     subject: "email verification from bishulim",
-    text: `https://beshulim.herokuapp.com/api/email/${tokken}`,
+    text: `localhost:5000/api/email/${tokken}`,
   });
 };
 

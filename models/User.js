@@ -37,6 +37,13 @@ UserSchema.virtual("recipes", {
   foreignField: "owner", //he fields that connects the 2 documents (like in sql keys)
 });
 
+//setting relationship between tasks and user, not an actual filed in user, therefore virtual
+UserSchema.virtual("tags", {
+  ref: "Tag", //just so mongoose can figure out what is owned by what and their relations
+  localField: "_id",
+  foreignField: "owner", //he fields that connects the 2 documents (like in sql keys)
+});
+
 //generating user authentication token SPECIFIC OBJECT METHODS LIVE IN METHODS
 UserSchema.methods.generateAuthToken = async function () {
   const user = this;

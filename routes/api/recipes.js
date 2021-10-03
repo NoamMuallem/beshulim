@@ -52,7 +52,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     recipeTags.forEach((tag) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
-          { name: tag },
+          { name: tag, owner: req.user._id },
           { $inc: { count: 1 } },
           {
             new: true,
@@ -87,7 +87,7 @@ router.delete("/:id", auth, async (req, res) => {
     recipe.tags.forEach((tag) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
-          { name: tag },
+          { name: tag, owner: req.user._id },
           { $inc: { count: -1 } },
           {
             new: true,
@@ -135,7 +135,7 @@ router.patch("/:id", auth, upload.any(), async (req, res) => {
     tagsToDelete.forEach((tag) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
-          { name: tag },
+          { name: tag, owner: req.user._id },
           { $inc: { count: -1 } },
           {
             new: true,
@@ -148,7 +148,7 @@ router.patch("/:id", auth, upload.any(), async (req, res) => {
     tagsToAdd.forEach((tag) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
-          { name: tag },
+          { name: tag, owner: req.user._id },
           { $inc: { count: 1 } },
           {
             new: true,

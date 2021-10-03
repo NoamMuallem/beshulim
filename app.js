@@ -10,6 +10,7 @@ require("dotenv").config();
 // routes
 const authRoutes = require("./routes/api/auth");
 const recipesRoutes = require("./routes/api/recipes");
+const tagsRoutes = require("./routes/api/tags");
 const shoppingList = require("./routes/api/shopping-list");
 const email = require("./routes/api/email");
 
@@ -41,6 +42,7 @@ mongoose
 // Use Routes
 app.use("/api/recipes", recipesRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/tags", tagsRoutes);
 app.use("/api/shopping-list", shoppingList);
 app.use("/api/email", email);
 

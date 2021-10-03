@@ -13,32 +13,29 @@ require("dotenv").config();
  * @access  Private
  */
 
-//Get /tasks?completed=true
-//Get /tasks?limit=10&skip=3(page 3, 10 resolts=> show 20-29)
-//Get /tasks?sortBy=createdAt:asc/desc
+//api/recipes/?limit=5 - limit amount of results
+//api/recipes/?createdOnBefore=<timestamp> - instead of skip - to prevent indexing and allow scalling,
+//the client will return a date of creation thet from it show results (with limit)
+//api/recipes/?tags=["<tag name>"] - an array os strings - the tags to search by
+//api/recipes/?text="free text" - free text search in the recipe name
+
 router.get("/", auth, async (req, res) => {
-  const match = {};
-  const sort = {};
-
-  if (req.query.text) {
-    //  //we get a string from req.query.completed, if the string equals to the string 'true'
-    //  //we will save that value and use that
-    //  //if nothing was provided we will get null and not populate match, so we will get all the tasks we have
-    match.$text = { $search: req.query.text };
-  }
-
-  //if (req.query.sortBy) {
-  //  const parts = req.query.sortBy.split(":");
-  //  //sort by unknown field, accessing it with[], short if statmant to assighn 1 or -1 depending on the str in part[1]
-  //  sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
-  //}
-
   try {
     await req.user
       .populate({
         path: "recipes",
-        options: { sort: { date: -1 } },
-        match,
+        match: {
+          ...(req.query.tags && { tags: { $all: JSON.parse(req.query.tags) } }),
+          ...(req.query.text && { $text: { $search: req.query.text } }),
+          ...(req.query.createdOnBefore && {
+            createdAt: { $lt: req.query.createdOnBefore },
+          }),
+        },
+        options: {
+          sort: { createdAt: -1 },
+          ...(req.query.limit && { limit: req.query.limit }),
+        },
+        select: ["name", "image", "tags"],
       })
       .execPopulate();
 

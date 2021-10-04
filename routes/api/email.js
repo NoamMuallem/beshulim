@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/User");
+const User = require("../../models/userModel.js");
 const ignoreFavicon = require("../../middleware/ignore-favicon");
 require("dotenv").config();
 const router = Router();

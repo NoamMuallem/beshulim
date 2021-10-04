@@ -1,12 +1,8 @@
 const { Router } = require("express");
 const auth = require("../../middleware/auth");
-// User Model
-const User = require("../../models/User");
-//email sending api
+const User = require("../../models/userModel.js");
 const { sendPasswordReset } = require("../../emails/send-email");
-//router
 const router = Router();
-//hashing password for compairisent
 const bcrypt = require("bcryptjs");
 
 /**

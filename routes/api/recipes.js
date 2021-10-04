@@ -1,10 +1,10 @@
 const { Router } = require("express");
 const auth = require("../../middleware/auth");
-const Recipe = require("../../models/Recipe");
+const Recipe = require("../../models/recipeModel.js");
 const router = Router();
 const upload = require("../../middleware/image-upload");
-const User = require("../../models/User");
-const Tag = require("../../models/Tag");
+const User = require("../../models/userModel.js");
+const Tag = require("../../models/tagModel.js");
 require("dotenv").config();
 
 /**

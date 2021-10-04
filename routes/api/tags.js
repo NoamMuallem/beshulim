@@ -3,7 +3,6 @@ const auth = require("../../middleware/auth");
 const router = Router();
 const User = require("../../models/userModel.js");
 const Tag = require("../../models/tagModel.js");
-require("dotenv").config();
 
 /**
  * @route   GET api/tags

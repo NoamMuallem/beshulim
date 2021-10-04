@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const api = require("./routes/api");
 const initializeDB = require("./db.js");
-require("dotenv").config();
+const config = "./config";
 
 initializeDB();
 

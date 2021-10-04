@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel.js");
-require("dotenv").config();
+const config = require("../config");
 
 const auth = async (req, res, next) => {
   try {
     //get the user id from jwt
     const token = req.header("x-auth-token");
-    const decoded = jwt.verify(token, process.env.TOKKEN_SECRET);
+    const decoded = jwt.verify(token, config.TOKKEN_SECRET);
 
     //find user with that id that have an active seesion (with that token)
     const user = await User.findOne({

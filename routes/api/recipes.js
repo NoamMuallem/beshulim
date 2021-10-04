@@ -5,7 +5,6 @@ const router = Router();
 const upload = require("../../middleware/image-upload");
 const User = require("../../models/userModel.js");
 const Tag = require("../../models/tagModel.js");
-require("dotenv").config();
 
 /**
  * @route   GET api/recipes

@@ -1,12 +1,12 @@
-require("dotenv").config();
+const config = require("../config");
 const sgmail = require("@sendgrid/mail");
 const generatePassword = require("password-generator");
 const jwt = require("jsonwebtoken");
 
-sgmail.setApiKey(process.env.SENDGRID_API_KEY);
+sgmail.setApiKey(config.SENDGRID_API_KEY);
 
 const sendEmailVerification = async (user) => {
-  const token = jwt.sign({ _id: user._id }, process.env.TOKKEN_SECRET);
+  const token = jwt.sign({ _id: user._id }, config.TOKKEN_SECRET);
   await sgmail.send({
     to: user.email,
     from: "thedude072@gmail.com",

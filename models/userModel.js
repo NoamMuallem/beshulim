@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Recipe = require("./recipeModel.js");
 const { sendEmailVerification } = require("../emails/send-email");
-require("dotenv").config();
+const config = require("../config");
 
 // Create Schema
 const UserSchema = new mongoose.Schema({
@@ -57,7 +57,7 @@ UserSchema.methods.generateAuthToken = async function () {
   const user = this;
 
   //create new token append to tokens array and save
-  const token = jwt.sign({ _id: user._id }, process.env.TOKKEN_SECRET);
+  const token = jwt.sign({ _id: user._id }, config.TOKKEN_SECRET);
   user.tokens = user.tokens.concat({ token });
   await user.save();
 

@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
+const config = require("./config");
 
 function initializeDB() {
   // DB Config
-  const db = `${process.env.MONGO_URI}`;
+  const db = `${config.MONGO_URI}`;
   // Connect to Mongo
   mongoose
     .connect(db, {

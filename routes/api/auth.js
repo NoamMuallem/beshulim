@@ -24,8 +24,7 @@ router.post("/register", async (req, res) => {
     }
     user = new User({ name, email, password, confirmed: false });
     const token = await user.generateAuthToken();
-    user = await user.save();
-    //returns a promise but we are not interested to await for it
+
     res.status(201).send({
       user: user,
       token,
@@ -83,7 +82,6 @@ router.delete("/user", auth, async (req, res) => {
     await req.user.remove();
     res.json({ msg: "משתמש נמחק בהצלחה" });
   } catch (e) {
-    //return 400 and massage
     res.status(400).json({ msg: "לא הייתה אפשרות למחוק את המשתמש" });
   }
 });
@@ -107,8 +105,8 @@ router.patch("/user", auth, async (req, res) => {
       ) {
         throw new Error("סיסמא שגוייה");
       }
-    } else if (req.body["email"]) {
       //change email, have to check that email is not taken
+    } else if (req.body["email"]) {
       const tempUser = await User.findOne({ email: req.body.email });
       if (tempUser) {
         throw new Error("כתובת המייל כבר בשימוש");
@@ -139,6 +137,26 @@ router.get("/user/password/:email", async (req, res) => {
     res.status(200).send({ msg: "מייל עם סיסמא חדשה נשלח" });
   } catch (e) {
     res.status(400).send({ msg: e.message });
+  }
+});
+
+/**
+ * @route   Post api/auth/user/logout
+ * @desc    Delete user session by removing token from user token array
+ * @access  private
+ */
+router.post("/user/logout", auth, async (req, res) => {
+  try {
+    const newTokens = req.user.tokens.filter(
+      (token) => token.token !== req.token
+    ); //keep all tokens that dont belong to this session
+    console.log(newTokens);
+    req.user.tokens = newTokens;
+    await req.user.save();
+
+    res.send();
+  } catch (e) {
+    res.status(500).send();
   }
 });
 

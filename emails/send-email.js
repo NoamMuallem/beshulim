@@ -1,15 +1,16 @@
 const sgmail = require("@sendgrid/mail");
 const generatePassword = require("password-generator");
+const jwt = require("jsonwebtoken");
 
 sgmail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmailVerification = async (user) => {
-  const tokken = await user.generateAuthToken();
+  const token = jwt.sign({ _id: user._id }, process.env.TOKKEN_SECRET);
   await sgmail.send({
     to: user.email,
     from: "thedude072@gmail.com",
     subject: "email verification from bishulim",
-    text: `localhost:5000/api/email/${tokken}`,
+    text: `localhost:5000/api/email/${token}`,
   });
 };
 

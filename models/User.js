@@ -24,6 +24,15 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  tokens: [
+    {
+      //for all the sessions (tokens) this user currently have (if he is login from multiple devices)
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   register_date: {
     type: Date,
     default: Date.now,
@@ -37,18 +46,20 @@ UserSchema.virtual("recipes", {
   foreignField: "owner", //he fields that connects the 2 documents (like in sql keys)
 });
 
-//setting relationship between tasks and user, not an actual filed in user, therefore virtual
 UserSchema.virtual("tags", {
-  ref: "Tag", //just so mongoose can figure out what is owned by what and their relations
+  ref: "Tag",
   localField: "_id",
-  foreignField: "owner", //he fields that connects the 2 documents (like in sql keys)
+  foreignField: "owner",
 });
 
 //generating user authentication token SPECIFIC OBJECT METHODS LIVE IN METHODS
 UserSchema.methods.generateAuthToken = async function () {
   const user = this;
 
+  //create new token append to tokens array and save
   const token = jwt.sign({ _id: user._id }, process.env.TOKKEN_SECRET);
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
 
   return token;
 };
@@ -68,7 +79,7 @@ UserSchema.statics.findByCredentials = async (email, password) => {
   return user;
 };
 
-//hash the plain text password
+//hash the plain text password and resend email verification if needed
 UserSchema.pre("save", async function (next) {
   const user = this;
 
@@ -83,7 +94,6 @@ UserSchema.pre("save", async function (next) {
     sendEmailVerification(user);
   }
 
-  //when we done, not gone save the user if not called
   next();
 });
 
@@ -92,6 +102,7 @@ UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
+  delete userObject.tokens;
   delete userObject.password;
   delete userObject.tags;
 

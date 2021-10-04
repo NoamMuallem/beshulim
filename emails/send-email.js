@@ -1,3 +1,4 @@
+require("dotenv").config();
 const sgmail = require("@sendgrid/mail");
 const generatePassword = require("password-generator");
 const jwt = require("jsonwebtoken");

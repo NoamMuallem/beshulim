@@ -32,7 +32,7 @@ const sendCancelationEmail = (email, name) => {
     to: email,
     from: "thedude072@gmail.com",
     subject: "goodbye",
-    text: `good bye, ${name}, hoped you liked it.\ncould you please tell us why did you left?`,
+    text: `good bye, ${name}, your user and all your data has bean deleted from our system.`,
   });
 };
 

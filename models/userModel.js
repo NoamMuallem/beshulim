@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Recipe = require("./recipeModel.js");
-const { sendEmailVerification } = require("../emails/send-email");
+const Recipe = require("./recipeModel");
+const Tag = require("./tagModel");
+const {
+  sendEmailVerification,
+  sendCancelationEmail,
+} = require("../emails/send-email");
 const config = require("../config");
 
 // Create Schema
@@ -113,6 +117,8 @@ UserSchema.methods.toJSON = function () {
 UserSchema.pre("remove", async function (next) {
   const user = this;
   await Recipe.deleteMany({ owner: user._id });
+  await Tag.deleteMany({ owner: user._id });
+  sendCancelationEmail(user.email, user.name);
   next();
 });
 

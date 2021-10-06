@@ -156,4 +156,19 @@ router.post("/user/logout", auth, async (req, res) => {
   }
 });
 
+/**
+ * @route   Delete api/auth/user
+ * @desc    Delete user and all asociated uaer data with it
+ * @access  private
+ */
+router.delete("/user", auth, async (req, res) => {
+  try {
+    await req.user.remove();
+
+    res.send(req.user);
+  } catch {
+    res.status(500).send();
+  }
+});
+
 module.exports = router;

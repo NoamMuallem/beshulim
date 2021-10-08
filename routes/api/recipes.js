@@ -16,8 +16,7 @@ const Tag = require("../../models/tagModel.js");
 //api/recipes/?createdOnBefore=<timestamp> - instead of skip - to prevent indexing and allow scalling,
 //the client will return a date of creation thet from it show results (with limit)
 //api/recipes/?tags=["<tag name>"] - an array os strings - the tags to search by
-//api/recipes/?text="free text" - free text search in the recipe name
-
+//api/recipes/?text="free text" - free text search in the recipe name - IMPATIENT: no spaces, plus signs instead
 router.get("/", auth, async (req, res) => {
   try {
     await req.user
@@ -25,7 +24,9 @@ router.get("/", auth, async (req, res) => {
         path: "recipes",
         match: {
           ...(req.query.tags && { tags: { $all: JSON.parse(req.query.tags) } }),
-          ...(req.query.text && { $text: { $search: req.query.text } }),
+          ...(req.query.text && {
+            name: { $regex: new RegExp(req.query.text, "i") },
+          }),
           ...(req.query.createdOnBefore && {
             createdAt: { $lt: req.query.createdOnBefore },
           }),

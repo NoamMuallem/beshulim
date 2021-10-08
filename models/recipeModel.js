@@ -26,9 +26,6 @@ const RecipeSchema = new mongoose.Schema(
   }
 );
 
-//to allow text base search
-RecipeSchema.index({ name: "text" });
-
 const Recipe = mongoose.model("Recipe", RecipeSchema);
 
 module.exports = Recipe;

@@ -1,12 +1,13 @@
-const config = require("../config");
-const sgmail = require("@sendgrid/mail");
-const generatePassword = require("password-generator");
-const jwt = require("jsonwebtoken");
+import config from "../config";
+import sgmail from "@sendgrid/mail";
+import generatePassword from "password-generator";
+import jwt from "jsonwebtoken";
+import userSchema from "../models/userModel";
 
-sgmail.setApiKey(config.SENDGRID_API_KEY);
+sgmail.setApiKey(config.SENDGRID_API_KEY!);
 
-const sendEmailVerification = async (user) => {
-  const token = jwt.sign({ _id: user._id }, config.TOKKEN_SECRET);
+export const sendEmailVerification = async (user: typeof userSchema) => {
+  const token = jwt.sign({ _id: user._id }, config.TOKKEN_SECRET!);
   await sgmail.send({
     to: user.email,
     from: "thedude072@gmail.com",
@@ -15,7 +16,7 @@ const sendEmailVerification = async (user) => {
   });
 };
 
-const sendPasswordReset = async (user) => {
+export const sendPasswordReset = async (user: typeof userSchema) => {
   const password = generatePassword(12, false);
   user.password = password;
   await user.save();
@@ -27,17 +28,11 @@ const sendPasswordReset = async (user) => {
   });
 };
 
-const sendCancelationEmail = (email, name) => {
+export const sendCancelationEmail = (email: string, name: string) => {
   sgmail.send({
     to: email,
     from: "thedude072@gmail.com",
     subject: "goodbye",
     text: `good bye, ${name}, your user and all your data has bean deleted from our system.`,
   });
-};
-
-module.exports = {
-  sendEmailVerification,
-  sendCancelationEmail,
-  sendPasswordReset,
 };

@@ -6,6 +6,7 @@ const config = {
   TOKKEN_SECRET: process.env.TOKKEN_SECRET,
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
   MONGO_URI: process.env.MONGO_URI,
+  PORT: process.env.PORT,
 };
 
-module.exports = config;
+export default config;

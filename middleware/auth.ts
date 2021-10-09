@@ -1,12 +1,13 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel.js");
-const config = require("../config");
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
+import config from "../config";
+import { IJETUserPayload } from "interfaces.js";
 
-const auth = async (req, res, next) => {
+const auth = async (req: any, res: any, next: Function) => {
   try {
     //get the user id from jwt
     const token = req.header("x-auth-token");
-    const decoded = jwt.verify(token, config.TOKKEN_SECRET);
+    const decoded = jwt.verify(token, config.TOKKEN_SECRET!) as IJETUserPayload;
 
     //find user with that id that have an active seesion (with that token)
     const user = await User.findOne({
@@ -27,4 +28,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+export default auth;

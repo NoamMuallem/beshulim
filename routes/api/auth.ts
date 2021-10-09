@@ -1,9 +1,11 @@
-const { Router } = require("express");
-const auth = require("../../middleware/auth");
-const User = require("../../models/userModel.js");
-const { sendPasswordReset } = require("../../emails/send-email");
+import { Router } from "express";
+import auth from "../../middleware/auth";
+import User from "../../models/userModel.js";
+import { sendPasswordReset } from "../../emails/send-email";
+import bcrypt from "bcryptjs";
+import { IUser } from "../../interfaces";
+
 const router = Router();
-const bcrypt = require("bcryptjs");
 
 /**
  * @route   POST api/auth/register
@@ -11,7 +13,7 @@ const bcrypt = require("bcryptjs");
  * @access  Public
  */
 
-router.post("/register", async (req, res) => {
+router.post("/register", async (req: any, res: any) => {
   const { name, email, password } = req.body;
   let user = await User.findOne({ email });
   try {
@@ -36,7 +38,7 @@ router.post("/register", async (req, res) => {
  * @access  Public
  */
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: any, res: any) => {
   let token = null;
   let user = null;
   try {
@@ -57,7 +59,7 @@ router.post("/login", async (req, res) => {
  * @access  Private
  */
 
-router.get("/user", auth, async (req, res) => {
+router.get("/user", auth, async (req: any, res: any) => {
   try {
     //send user from auth middleware back
     res.json(req.user);
@@ -73,7 +75,7 @@ router.get("/user", auth, async (req, res) => {
  * @access  Private
  */
 
-router.delete("/user", auth, async (req, res) => {
+router.delete("/user", auth, async (req: any, res: any) => {
   try {
     await req.user.remove();
     res.json({ msg: "משתמש נמחק בהצלחה" });
@@ -88,7 +90,7 @@ router.delete("/user", auth, async (req, res) => {
  * @access  Private
  */
 
-router.patch("/user", auth, async (req, res) => {
+router.patch("/user", auth, async (req: any, res: any) => {
   //what fileds to update
   const keys = Object.keys(req.body);
   try {
@@ -123,7 +125,7 @@ router.patch("/user", auth, async (req, res) => {
  * @desc    send a new password mail to user
  * @access  Public
  */
-router.get("/user/password/:email", async (req, res) => {
+router.get("/user/password/:email", async (req: any, res: any) => {
   try {
     const user = await User.findOne({ email: req.params.email });
     if (!user) {
@@ -141,11 +143,11 @@ router.get("/user/password/:email", async (req, res) => {
  * @desc    Delete user session by removing token from user token array
  * @access  private
  */
-router.post("/user/logout", auth, async (req, res) => {
+router.post("/user/logout", auth, async (req: any, res: any) => {
   try {
-    const newTokens = req.user.tokens.filter(
-      (token) => token.token !== req.token
-    ); //keep all tokens that dont belong to this session
+    const user: IUser = req.user;
+
+    const newTokens = user.tokens.filter((token) => token.token !== req.token); //keep all tokens that dont belong to this session
     console.log(newTokens);
     req.user.tokens = newTokens;
     await req.user.save();
@@ -161,7 +163,7 @@ router.post("/user/logout", auth, async (req, res) => {
  * @desc    Delete user and all asociated uaer data with it
  * @access  private
  */
-router.delete("/user", auth, async (req, res) => {
+router.delete("/user", auth, async (req: any, res: any) => {
   try {
     await req.user.remove();
 
@@ -171,4 +173,4 @@ router.delete("/user", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

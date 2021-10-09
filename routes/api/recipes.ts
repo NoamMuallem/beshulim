@@ -1,10 +1,10 @@
-const { Router } = require("express");
-const auth = require("../../middleware/auth");
-const Recipe = require("../../models/recipeModel.js");
+import { Router } from "express";
+import auth from "../../middleware/auth";
+import Recipe from "../../models/recipeModel.js";
+import upload from "../../middleware/image-upload";
+import Tag from "../../models/tagModel.js";
+
 const router = Router();
-const upload = require("../../middleware/image-upload");
-const User = require("../../models/userModel.js");
-const Tag = require("../../models/tagModel.js");
 
 /**
  * @route   GET api/recipes
@@ -17,7 +17,7 @@ const Tag = require("../../models/tagModel.js");
 //the client will return a date of creation thet from it show results (with limit)
 //api/recipes/?tags=["<tag name>"] - an array os strings - the tags to search by
 //api/recipes/?text="free text" - free text search in the recipe name - IMPATIENT: no spaces, plus signs instead
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, async (req: any, res: any) => {
   try {
     await req.user
       .populate({
@@ -51,17 +51,17 @@ router.get("/", auth, async (req, res) => {
  * @access  Private
  */
 
-router.post("/", auth, upload.any(), async (req, res) => {
+router.post("/", auth, upload.any(), async (req: any, res: any) => {
   try {
     if (!req.user.confirmed) {
-      //error rendered in client
+      //error rendered in client - will not allow users to add recipes if the email address is not confirmed
       throw new Error("user did not confirm email address");
     }
     //updating tags
     const data = req.body.data;
     const recipeTags = data.tags;
     const dbWrits = [];
-    let recipe = new Recipe({
+    let recipe: typeof Recipe = new Recipe({
       ...data, //copy over all the fields from req.body to the object
       tags: recipeTags,
       ...(req.body.image && { image: req.body.image }),
@@ -69,7 +69,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     });
     dbWrits.push(recipe.save());
     const response = { recipe: { ...recipe._doc } };
-    recipeTags.forEach((tag) => {
+    recipeTags.forEach((tag: string) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
           { name: tag, owner: req.user._id },
@@ -94,7 +94,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
  * @access  Private
  */
 
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", auth, async (req: any, res: any) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
@@ -103,8 +103,9 @@ router.delete("/:id", auth, async (req, res) => {
     const dbWrits = [];
     //await recipe.removeTagsFromUser(req.user);
     dbWrits.push(recipe.remove());
-    const tagsToDecrement = recipe.tags;
-    recipe.tags.forEach((tag) => {
+
+    //recipes tags we need to increament by -1
+    recipe.tags.forEach((tag: string) => {
       dbWrits.push(
         Tag.findOneAndUpdate(
           { name: tag, owner: req.user._id },
@@ -129,7 +130,7 @@ router.delete("/:id", auth, async (req, res) => {
  * @desc    Update A Recipe
  * @access  Private
  */
-router.patch("/:id", auth, upload.any(), async (req, res) => {
+router.patch("/:id", auth, upload.any(), async (req: any, res: any) => {
   try {
     let data = req.body.data;
     //get current recipe
@@ -143,8 +144,8 @@ router.patch("/:id", auth, upload.any(), async (req, res) => {
     const newTags = req.body.data.tags;
     //all change in tags
     let tagsDiffrent = [
-      ...currentTags.filter((x) => !newTags.includes(x)),
-      ...newTags.filter((x) => !currentTags.includes(x)),
+      ...currentTags.filter((x: string) => !newTags.includes(x)),
+      ...newTags.filter((x: string) => !currentTags.includes(x)),
     ];
     //what is not in tagsDiff and current currentTags needs to be
     let tagsToAdd = tagsDiffrent.filter((x) => !currentTags.includes(x));
@@ -192,4 +193,4 @@ router.patch("/:id", auth, upload.any(), async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,8 +1,8 @@
-const express = require("express");
-const path = require("path");
-const api = require("./routes/api");
-const initializeDB = require("./db.js");
-const config = "./config";
+import express from "express";
+import path from "path";
+import api from "./routes/api";
+import initializeDB from "./db.js";
+import config from "./config";
 
 initializeDB();
 
@@ -10,14 +10,14 @@ const app = express();
 app.use("/api", api);
 
 // Serve static react assets if in production
-if (process.env.NODE_ENV === "production") {
+if (config.production) {
   // Set static folder
   app.use(express.static("client/build"));
 
   //if no route was hit up until now, serve the static files from build folder
-  app.get("*", (req, res) => {
+  app.get("*", (_, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
 
-module.exports = app;
+export default app;

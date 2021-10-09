@@ -1,16 +1,14 @@
-const { Router } = require("express");
-const auth = require("../../middleware/auth");
-const router = Router();
-const User = require("../../models/userModel.js");
-const Tag = require("../../models/tagModel.js");
+import { Router } from "express";
+import auth from "../../middleware/auth";
 
+const router = Router();
 /**
  * @route   GET api/tags
  * @desc    Get User tags
  * @access  Private
  */
 
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, async (req: any, res: any) => {
   try {
     await req.user
       .populate({
@@ -27,4 +25,4 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,13 +1,14 @@
-const cors = require("cors");
-const morgan = require("morgan");
-const helmet = require("helmet");
-const express = require("express");
+import cors from "cors";
+import morgan from "morgan";
+import helmet from "helmet";
+import express from "express";
+
 const router = express.Router();
 // routes
-const authRoutes = require("./auth.js");
-const recipesRoutes = require("./recipes.js");
-const tagsRoutes = require("./tags.js");
-const email = require("./email.js");
+import authRoutes from "./auth";
+import recipesRoutes from "./recipes";
+import tagsRoutes from "./tags";
+import email from "./email";
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -24,4 +25,4 @@ router.use("/auth", authRoutes);
 router.use("/tags", tagsRoutes);
 router.use("/email", email);
 
-module.exports = router;
+export default router;

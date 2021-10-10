@@ -1,8 +1,7 @@
 import { Router } from "express";
 import auth from "../../middleware/auth";
-import Recipe from "../../models/recipeModel.js";
 import upload from "../../middleware/image-upload";
-import Tag from "../../models/tagModel.js";
+import RecipeController from "../../controllers/recipesController";
 
 const router = Router();
 
@@ -19,27 +18,17 @@ const router = Router();
 //api/recipes/?text="free text" - free text search in the recipe name - IMPATIENT: no spaces, plus signs instead
 router.get("/", auth, async (req: any, res: any) => {
   try {
-    await req.user
-      .populate({
-        path: "recipes",
-        match: {
-          ...(req.query.tags && { tags: { $all: JSON.parse(req.query.tags) } }),
-          ...(req.query.text && {
-            name: { $regex: new RegExp(req.query.text, "i") },
-          }),
-          ...(req.query.createdOnBefore && {
-            createdAt: { $lt: req.query.createdOnBefore },
-          }),
-        },
-        options: {
-          sort: { createdAt: -1 },
-          ...(req.query.limit && { limit: req.query.limit }),
-        },
-        select: ["name", "image", "tags"],
-      })
-      .execPopulate();
+    const query = req.query;
 
-    res.send(req.user.recipes);
+    const recipes = await RecipeController.populateUserRecipes(
+      req.user,
+      query.limit,
+      query.createdOnBefore,
+      query.tags,
+      query.text
+    );
+
+    res.send(recipes);
   } catch (e) {
     res.status(500).send({ msg: e.message });
   }
@@ -57,31 +46,13 @@ router.post("/", auth, upload.any(), async (req: any, res: any) => {
       //error rendered in client - will not allow users to add recipes if the email address is not confirmed
       throw new Error("user did not confirm email address");
     }
-    //updating tags
-    const data = req.body.data;
-    const recipeTags = data.tags;
-    const dbWrits = [];
-    let recipe: typeof Recipe = new Recipe({
-      ...data, //copy over all the fields from req.body to the object
-      tags: recipeTags,
-      ...(req.body.image && { image: req.body.image }),
-      owner: req.user._id,
-    });
-    dbWrits.push(recipe.save());
-    const response = { recipe: { ...recipe._doc } };
-    recipeTags.forEach((tag: string) => {
-      dbWrits.push(
-        Tag.findOneAndUpdate(
-          { name: tag, owner: req.user._id },
-          { $inc: { count: 1 } },
-          {
-            new: true,
-            upsert: true, // Make this update into an upsert
-          }
-        )
-      );
-    });
-    await Promise.allSettled(dbWrits);
+
+    const response = await RecipeController.createARecipe(
+      req.user,
+      req.body.image,
+      req.body.data
+    );
+
     res.status(201).send(response);
   } catch (e) {
     res.status(400).send({ msg: e.message });
@@ -96,29 +67,11 @@ router.post("/", auth, upload.any(), async (req: any, res: any) => {
 
 router.delete("/:id", auth, async (req: any, res: any) => {
   try {
-    const recipe = await Recipe.findById(req.params.id);
-    if (!recipe) {
-      throw new Error("Recipe coul'd not be found");
-    }
-    const dbWrits = [];
-    //await recipe.removeTagsFromUser(req.user);
-    dbWrits.push(recipe.remove());
+    const response = await RecipeController.deleteRecipe(
+      req.user,
+      req.params.id
+    );
 
-    //recipes tags we need to increament by -1
-    recipe.tags.forEach((tag: string) => {
-      dbWrits.push(
-        Tag.findOneAndUpdate(
-          { name: tag, owner: req.user._id },
-          { $inc: { count: -1 } },
-          {
-            new: true,
-            upsert: true, // Make this update into an upsert
-          }
-        )
-      );
-    });
-    await Promise.allSettled(dbWrits);
-    const response = { _id: req.params.id };
     res.send(response);
   } catch (e) {
     res.status(400).send({ msg: e.message });
@@ -133,60 +86,12 @@ router.delete("/:id", auth, async (req: any, res: any) => {
 router.patch("/:id", auth, upload.any(), async (req: any, res: any) => {
   try {
     let data = req.body.data;
-    //get current recipe
-    let recipe = await Recipe.findById(req.params.id);
-    if (!recipe) {
-      throw new Error("no recipe found!");
-    }
-    //list of current tags
-    const currentTags = recipe.tags;
-    //list of new tags
-    const newTags = req.body.data.tags;
-    //all change in tags
-    let tagsDiffrent = [
-      ...currentTags.filter((x: string) => !newTags.includes(x)),
-      ...newTags.filter((x: string) => !currentTags.includes(x)),
-    ];
-    //what is not in tagsDiff and current currentTags needs to be
-    let tagsToAdd = tagsDiffrent.filter((x) => !currentTags.includes(x));
-    //what is not in currentTags and current currentTags needs to be
-    let tagsToDelete = tagsDiffrent.filter((x) => !newTags.includes(x));
-
-    const dbWrits = [];
-    tagsToDelete.forEach((tag) => {
-      dbWrits.push(
-        Tag.findOneAndUpdate(
-          { name: tag, owner: req.user._id },
-          { $inc: { count: -1 } },
-          {
-            new: true,
-            upsert: true, // Make this update into an upsert
-          }
-        )
-      );
-    });
-
-    tagsToAdd.forEach((tag) => {
-      dbWrits.push(
-        Tag.findOneAndUpdate(
-          { name: tag, owner: req.user._id },
-          { $inc: { count: 1 } },
-          {
-            new: true,
-            upsert: true, // Make this update into an upsert
-          }
-        )
-      );
-    });
-
-    //update recipe fields
-    data = {
-      ...data,
-      ...(req.body.image ? { image: req.body.image } : { image: null }),
-    };
-    Object.keys(data).forEach((update) => (recipe[update] = data[update]));
-    dbWrits.push(recipe.save());
-    await Promise.allSettled(dbWrits);
+    const recipe = await RecipeController.updateRecipe(
+      req.user,
+      req.params.id,
+      data,
+      req.body.image
+    );
     res.status(201).json({ recipe });
   } catch (e) {
     res.status(400).json({ msg: e.message });

@@ -2,8 +2,8 @@ import { Router } from "express";
 import auth from "../../middleware/auth";
 import User from "../../models/userModel.js";
 import { sendPasswordReset } from "../../emails/send-email";
-import bcrypt from "bcryptjs";
 import { IUser } from "../../interfaces";
+import UserController from "../../controllers/userController";
 
 const router = Router();
 
@@ -15,20 +15,16 @@ const router = Router();
 
 router.post("/register", async (req: any, res: any) => {
   const { name, email, password } = req.body;
-  let user = await User.findOne({ email });
-  try {
-    if (user) {
-      throw new Error("כתובת המייל כבר בשימוש");
-    }
-    user = new User({ name, email, password, confirmed: false });
-    const token = await user.generateAuthToken();
 
-    res.status(201).send({
-      user: user,
-      token,
-    });
+  try {
+    const registeredUser = await UserController.registerNewUser(
+      name,
+      email,
+      password
+    );
+    res.status(201).send(registeredUser);
   } catch (e) {
-    res.status(400).send({ msg: e.message });
+    res.status(400).send({ error: e.message });
   }
 });
 
@@ -39,11 +35,11 @@ router.post("/register", async (req: any, res: any) => {
  */
 
 router.post("/login", async (req: any, res: any) => {
-  let token = null;
-  let user = null;
   try {
-    user = await User.findByCredentials(req.body.email, req.body.password);
-    token = await user.generateAuthToken();
+    const { user, token } = await UserController.login(
+      req.body.email,
+      req.body.password
+    );
     res.send({
       user,
       token,
@@ -77,7 +73,7 @@ router.get("/user", auth, async (req: any, res: any) => {
 
 router.delete("/user", auth, async (req: any, res: any) => {
   try {
-    await req.user.remove();
+    await UserController.deleteUser(req.user);
     res.json({ msg: "משתמש נמחק בהצלחה" });
   } catch (e) {
     res.status(400).json({ msg: "לא הייתה אפשרות למחוק את המשתמש" });
@@ -91,28 +87,8 @@ router.delete("/user", auth, async (req: any, res: any) => {
  */
 
 router.patch("/user", auth, async (req: any, res: any) => {
-  //what fileds to update
-  const keys = Object.keys(req.body);
   try {
-    const user = req.user;
-
-    if (req.body["password"]) {
-      //change password, have to chack if correct current password provided
-      if (
-        !(await bcrypt.compare(req.body.currentPassword, req.user.password))
-      ) {
-        throw new Error("סיסמא שגוייה");
-      }
-      //change email, have to check that email is not taken
-    } else if (req.body["email"]) {
-      const tempUser = await User.findOne({ email: req.body.email });
-      if (tempUser) {
-        throw new Error("כתובת המייל כבר בשימוש");
-      }
-    }
-    keys.forEach((key) => (user[key] = req.body[key]));
-    //using save to take adventage of the pre save middleware and hash password
-    await user.save();
+    const user = await UserController.updateUser(req.body, req.user);
     res.json(user).status(204);
   } catch (e) {
     //return 400 and massage

@@ -23,7 +23,7 @@ export const sendPasswordReset = async (user: typeof userSchema) => {
   await sgmail.send({
     to: user.email,
     from: "thedude072@gmail.com",
-    subject: "email verification from bishulim",
+    subject: "password reset",
     text: `סיסמתך החדשה היא: ${password}`,
   });
 };

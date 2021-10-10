@@ -1,4 +1,5 @@
 import { Router } from "express";
+import TagsController from "../../controllers/tagsController";
 import auth from "../../middleware/auth";
 
 const router = Router();
@@ -10,16 +11,9 @@ const router = Router();
 
 router.get("/", auth, async (req: any, res: any) => {
   try {
-    await req.user
-      .populate({
-        path: "tags",
-        match: { count: { $gt: 0 } },
-        options: { sort: { date: -1 } },
-        select: "name",
-      })
-      .execPopulate();
+    const tags = await TagsController.getUserTags(req.user);
 
-    res.send(req.user.tags);
+    res.send(tags);
   } catch (e) {
     res.status(500).send({ msg: e.message });
   }

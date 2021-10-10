@@ -10,7 +10,7 @@ import {
 import config from "../config";
 
 // Create Schema
-const UserSchema = new mongoose.Schema(
+export const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,

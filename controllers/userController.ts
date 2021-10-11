@@ -29,11 +29,12 @@ export default class UserController {
     await user.remove();
   }
 
-  static async updateUser(payload: Object, user: typeof UserSchema) {
+  static async updateUser(
+    payload: { [key: string]: string },
+    user: typeof UserSchema
+  ) {
     //what fileds to update
     const keys = Object.keys(payload);
-    console.log("got password:", payload.password);
-    console.log("got currentPassword:", payload.currentPassword);
 
     if (payload["password"]) {
       //change password, have to chack if correct current password provided

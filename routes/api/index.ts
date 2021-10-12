@@ -9,6 +9,7 @@ import authRoutes from "./auth";
 import recipesRoutes from "./recipes";
 import tagsRoutes from "./tags";
 import email from "./email";
+import recipeScrapper from "./recipeScrapper";
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -24,5 +25,6 @@ router.use("/recipes", recipesRoutes);
 router.use("/auth", authRoutes);
 router.use("/tags", tagsRoutes);
 router.use("/email", email);
+router.use("/scrapper", recipeScrapper);
 
 export default router;

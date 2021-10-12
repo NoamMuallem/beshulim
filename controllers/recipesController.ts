@@ -152,4 +152,13 @@ export default class RecipeController {
     await Promise.allSettled(dbWrits);
     return recipe;
   }
+
+  static async getRecipe(user: typeof UserSchema, _id: string) {
+    const recipe = await Recipe.findOne({ _id, owner: user._id });
+    if (!recipe) {
+      throw new Error("no recipe was found");
+    }
+
+    return recipe;
+  }
 }

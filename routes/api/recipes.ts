@@ -6,6 +6,24 @@ import RecipeController from "../../controllers/recipesController";
 const router = Router();
 
 /**
+ * @route   GET api/recipes/:id
+ * @desc    Get specific recipe
+ * @access  Private
+ */
+
+router.get("/:id", auth, async (req: any, res: any) => {
+  try {
+    const recipe = await RecipeController.getRecipe(
+      req.user._id,
+      req.params.id
+    );
+    res.send(recipe);
+  } catch (e) {
+    res.status(500).send({ msg: e.message });
+  }
+});
+
+/**
  * @route   GET api/recipes
  * @desc    Get User Recipes
  * @access  Private

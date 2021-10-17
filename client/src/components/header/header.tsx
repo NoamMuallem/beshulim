@@ -57,7 +57,7 @@ export default function HideAppBar(props: Props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" component="div">
-              News
+              Beshulim
             </Typography>
             <div
               style={{

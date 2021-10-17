@@ -24,7 +24,7 @@ export default function SignOut(): ReactElement | null {
         });
     } else {
       setToken!("");
-      setUser("");
+      setUser(undefined);
     }
   };
 

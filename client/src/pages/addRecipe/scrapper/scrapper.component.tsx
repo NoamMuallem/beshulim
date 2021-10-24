@@ -27,19 +27,34 @@ export default function AddRecipe({
   };
 
   return (
-    <div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "1rem",
+      }}
+    >
       <TextField
-        style={{ minWidth: "100%" }}
         placeholder="http://matkon.co.il/food"
         autoFocus
         margin="dense"
         label="link"
         fullWidth
         type="text"
-        variant="standard"
         {...link}
       />
-      <Button onClick={copyRecipe}>copy recipe</Button>
+      <Button
+        size="large"
+        style={{ width: "auto", whiteSpace: "nowrap", padding: ".85rem" }}
+        variant="outlined"
+        onClick={copyRecipe}
+      >
+        copy recipe
+      </Button>
     </div>
   );
 }

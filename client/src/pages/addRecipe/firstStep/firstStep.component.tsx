@@ -39,7 +39,9 @@ export default function FirstStep({
 
       if (active) {
         console.log("this is tags: ", res);
-        setOptions(Object.values(res.data).map((value: any) => value.name));
+        setOptions([
+          ...Object.values(res.data).map((value: any) => value.name),
+        ]);
       }
     })();
 
@@ -50,36 +52,39 @@ export default function FirstStep({
 
   React.useEffect(() => {
     if (!open) {
-      setOptions(options);
+      setOptions([...options]);
     }
   }, [open]);
 
   return (
-    <div>
+    <div style={{ width: "100%", height: "100%" }}>
       <TextField
         label={"שם המתכון"}
         value={name}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setName(e.target.value)
         }
+        inputProps={{ dir: "auto" }}
+        style={{ marginBottom: "1rem", width: "100%" }}
       />
       <Autocomplete
         multiple
         freeSolo
-        options={options}
+        options={[...options]}
         onOpen={() => {
           setOpen(true);
         }}
         onClose={() => {
           setOpen(false);
         }}
+        value={tags}
         onChange={(_, value: string[]) => {
           setTags([...value]);
         }}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search input"
+            label="תגיות"
             InputProps={{
               ...params.InputProps,
               type: "search",

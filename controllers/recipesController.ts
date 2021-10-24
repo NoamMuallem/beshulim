@@ -8,8 +8,23 @@ export default class RecipeController {
     limit: number | null = null,
     createdOnBefore: Date | null = null,
     tags: string | null = null,
-    text: string | null = null
+    text: string | null = null,
+    ingredientsArray: string | null
   ) {
+    //parse the ingredients array
+    const ingredientsJsonStringArray =
+      ingredientsArray && JSON.parse(ingredientsArray);
+    //reduce the array to one string for regEx
+    const ingredientsString =
+      ingredientsJsonStringArray &&
+      ingredientsJsonStringArray.reduce(function (
+        prevVal: string,
+        currVal: string,
+        idx: number
+      ) {
+        return idx == 0 ? currVal : prevVal + "| " + currVal;
+      },
+      "");
     await user
       .populate({
         path: "recipes",
@@ -17,6 +32,11 @@ export default class RecipeController {
           ...(tags && { tags: { $all: JSON.parse(tags) } }),
           ...(text && {
             name: { $regex: new RegExp(text, "i") },
+          }),
+          ...(ingredientsJsonStringArray && {
+            ingredients: {
+              $regex: new RegExp(ingredientsString, "i"),
+            },
           }),
           ...(createdOnBefore && {
             createdAt: { $lt: createdOnBefore },

@@ -43,7 +43,8 @@ router.get("/", auth, async (req: any, res: any) => {
       query.limit,
       query.createdOnBefore,
       query.tags,
-      query.text
+      query.text,
+      query.ingredientsArray
     );
 
     res.send(recipes);

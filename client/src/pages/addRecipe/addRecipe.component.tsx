@@ -110,8 +110,8 @@ export default function AddRecipe(): ReactElement | null {
         <div
           ref={divRef}
           style={{
-            width: "80vw",
-            height: "auto",
+            width: "100%",
+            height: "100%",
             margin: "auto",
             display: "flex",
             flexDirection: "column",

@@ -20,7 +20,6 @@ export default function TheredStep({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: ".5em",
       }}
     >
       <Typography dir="rtl" variant="h5" component="div">

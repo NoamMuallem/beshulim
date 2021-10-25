@@ -34,7 +34,7 @@ export default function AddRecipe(): ReactElement | null {
 
   //listen to screen height and change the page variable acordingly
   React.useEffect(() => {
-    if (Screen && Screen.height > 700 && Screen.width > 600) {
+    if (Screen && Screen.height > 600 && Screen.width > 500) {
       setPage(null);
     } else {
       setPage(1);
@@ -80,7 +80,12 @@ export default function AddRecipe(): ReactElement | null {
             width: "100%",
             flexGrow: 1,
             display: "flex",
-            flexDirection: Screen && Screen.width > 600 ? "row" : "column",
+            flexDirection:
+              Screen && Screen.height > 600 && Screen.width > 500
+                ? "row"
+                : "column",
+            margin: "auto",
+            marginTop: "-0.75rem",
           }}
         >
           {page === 1 ? (
@@ -118,7 +123,9 @@ export default function AddRecipe(): ReactElement | null {
           )}
           <div
             style={{
-              margin: "auto",
+              margin: "0 auto",
+              marginTop: "1rem",
+              gap: "1rem",
             }}
           >
             <Pagination
@@ -149,7 +156,7 @@ export default function AddRecipe(): ReactElement | null {
               justifyContent: "center",
               alignItems: "center",
               gap: "1rem",
-              flexGrow: 5,
+              flexBasis: "200%",
             }}
           >
             <SecondStep

@@ -64,6 +64,7 @@ export default function FirstStep({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
+        gap: "1rem",
         alignItems: "center",
       }}
     >
@@ -74,7 +75,7 @@ export default function FirstStep({
           setName(e.target.value)
         }
         inputProps={{ dir: "auto" }}
-        style={{ marginBottom: "1rem", width: "100%" }}
+        style={{ width: "100%" }}
       />
       <div style={{ width: "100%" }}>
         <Autocomplete

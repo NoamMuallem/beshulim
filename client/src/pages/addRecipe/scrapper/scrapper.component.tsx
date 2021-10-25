@@ -33,9 +33,13 @@ export default function AddRecipe({
       style={{
         width: "100%",
         display: "flex",
-        flexDirection: Screen && Screen.width < 600 ? "column" : "row",
+        flexDirection:
+          Screen && Screen.height > 600 && Screen.width > 500
+            ? "row"
+            : "column",
         justifyContent: "center",
         alignItems: "center",
+        flexGrow: 1,
         gap: "1rem",
       }}
     >
@@ -53,7 +57,13 @@ export default function AddRecipe({
       />
       <Button
         size="large"
-        style={{ width: "auto", whiteSpace: "nowrap", padding: ".85rem" }}
+        style={{
+          width: "auto",
+          whiteSpace: "nowrap",
+          marginTop: "8px",
+          marginBottom: "4px",
+          padding: "14px",
+        }}
         variant="outlined"
         onClick={copyRecipe}
       >

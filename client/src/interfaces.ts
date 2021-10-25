@@ -11,4 +11,5 @@ export interface IRecipe {
   directions: string;
   tags: string[];
   _id?: string;
+  createdAt?: string;
 }

@@ -1,8 +1,6 @@
 import React, { ReactElement } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import axios from "axios";
-import { AuthContext } from "../../../context/auth.context";
+import MultypleAutocompleteAsync from "../../../components/multypleAutocompleteAsync";
 
 interface Props {
   name: string;
@@ -17,45 +15,6 @@ export default function FirstStep({
   tags,
   setTags,
 }: Props): ReactElement | null {
-  //const [tempTag, setTempTag] = React.useState<string>("");
-  const [options, setOptions] = React.useState<string[]>([]);
-  const [open, setOpen] = React.useState(false);
-  const loading = open && Object.keys(options).length === 0;
-  const { token } = React.useContext(AuthContext);
-
-  React.useEffect(() => {
-    let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
-    (async () => {
-      const res: any = await axios.get("/api/tags", {
-        headers: {
-          "x-auth-token": token!,
-        },
-      });
-
-      if (active) {
-        console.log("this is tags: ", res);
-        setOptions([
-          ...Object.values(res.data).map((value: any) => value.name),
-        ]);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [loading]);
-
-  React.useEffect(() => {
-    if (!open) {
-      setOptions([...options]);
-    }
-  }, [open]);
-
   return (
     <div
       style={{
@@ -78,30 +37,17 @@ export default function FirstStep({
         style={{ width: "100%" }}
       />
       <div style={{ width: "100%" }}>
-        <Autocomplete
-          multiple
-          freeSolo
-          options={[...options]}
-          onOpen={() => {
-            setOpen(true);
+        <MultypleAutocompleteAsync
+          tags={tags}
+          setTags={setTags}
+          url={"/api/tags"}
+          label="תגיות"
+          onResCb={(data, setOptions) => {
+            setOptions([
+              ...Object.values(data).map((value: any) => value.name),
+            ]);
           }}
-          onClose={() => {
-            setOpen(false);
-          }}
-          value={tags}
-          onChange={(_, value: string[]) => {
-            setTags([...value]);
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="תגיות"
-              InputProps={{
-                ...params.InputProps,
-                type: "search",
-              }}
-            />
-          )}
+          free={true}
         />
       </div>
     </div>

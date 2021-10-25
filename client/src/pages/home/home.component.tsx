@@ -4,6 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { ReactElement } from "react";
 import { AuthContext } from "../../context/auth.context";
 import { useHistory } from "react-router";
+import RecipeExplorer from "../../components/recipeExplorer/recipeExplorer.component";
 
 export default function HomePage(): ReactElement | null {
   const { user } = React.useContext(AuthContext);
@@ -21,6 +22,7 @@ export default function HomePage(): ReactElement | null {
           >
             <AddIcon />
           </Fab>
+          <RecipeExplorer />
         </div>
       ) : (
         <div>please sign in to view app data</div>

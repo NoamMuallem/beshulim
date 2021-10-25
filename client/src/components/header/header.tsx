@@ -4,7 +4,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import CssBaseline from "@mui/material/CssBaseline";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import Container from "@mui/material/Container";
 import Slide from "@mui/material/Slide";
 import { IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -92,7 +91,7 @@ export default function HideAppBar(props: Props) {
         </AppBar>
       </HideOnScroll>
       <Toolbar />
-      <Container>{props.children}</Container>
+      {props.children}
     </React.Fragment>
   );
 }

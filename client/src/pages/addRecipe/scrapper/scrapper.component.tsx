@@ -1,8 +1,8 @@
-import { ReactElement } from "react";
-import useFormInput from "../../../hooks/input.hook";
+import React, { ReactElement } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
+import { UiContext } from "../../../context/uiContext";
 
 interface Props {
   setRecipeData: (value: Object) => void;
@@ -11,18 +11,20 @@ interface Props {
 export default function AddRecipe({
   setRecipeData,
 }: Props): ReactElement | null {
-  //const [page, setPage] = React.useState();
-  const link = useFormInput("");
+  const [link, setLink] = React.useState<string>("");
+  const { Screen } = React.useContext(UiContext);
 
   const copyRecipe = () => {
     axios
-      .post("/api/scrapper", { url: link.value })
+      .post("/api/scrapper", { url: link })
       .then((res: any) => {
         console.log(res);
         setRecipeData(res.data);
+        setLink("");
       })
       .catch((e) => {
         console.log(e);
+        setLink("");
       });
   };
 
@@ -30,9 +32,8 @@ export default function AddRecipe({
     <div
       style={{
         width: "100%",
-        height: "100%",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: Screen && Screen.width < 600 ? "column" : "row",
         justifyContent: "center",
         alignItems: "center",
         gap: "1rem",
@@ -42,10 +43,13 @@ export default function AddRecipe({
         placeholder="http://matkon.co.il/food"
         autoFocus
         margin="dense"
-        label="link"
+        label="קישור"
         fullWidth
         type="text"
-        {...link}
+        value={link}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setLink(e.target.value);
+        }}
       />
       <Button
         size="large"
@@ -53,7 +57,7 @@ export default function AddRecipe({
         variant="outlined"
         onClick={copyRecipe}
       >
-        copy recipe
+        העתק מתכון
       </Button>
     </div>
   );

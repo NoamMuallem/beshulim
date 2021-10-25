@@ -12,19 +12,27 @@ export default function SecondStep({
   setIngredients,
 }: Props): ReactElement | null {
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: ".5em",
+      }}
+    >
       <Typography dir="rtl" variant="h5" component="div">
         מרכיבים:
       </Typography>
       <TextareaAutosize
-        minRows={15}
-        maxRows={15}
         dir="auto"
         value={ingredients}
         onChange={(e) => {
           setIngredients(e.target.value);
         }}
-        style={{ width: "100%", marginBottom: "auto" }}
+        style={{ width: "100%", marginBottom: "auto", flexGrow: 5 }}
       />
     </div>
   );

@@ -57,7 +57,16 @@ export default function FirstStep({
   }, [open]);
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div
+      style={{
+        width: "100%",
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+      }}
+    >
       <TextField
         label={"שם המתכון"}
         value={name}
@@ -67,31 +76,33 @@ export default function FirstStep({
         inputProps={{ dir: "auto" }}
         style={{ marginBottom: "1rem", width: "100%" }}
       />
-      <Autocomplete
-        multiple
-        freeSolo
-        options={[...options]}
-        onOpen={() => {
-          setOpen(true);
-        }}
-        onClose={() => {
-          setOpen(false);
-        }}
-        value={tags}
-        onChange={(_, value: string[]) => {
-          setTags([...value]);
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="תגיות"
-            InputProps={{
-              ...params.InputProps,
-              type: "search",
-            }}
-          />
-        )}
-      />
+      <div style={{ width: "100%" }}>
+        <Autocomplete
+          multiple
+          freeSolo
+          options={[...options]}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
+          value={tags}
+          onChange={(_, value: string[]) => {
+            setTags([...value]);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="תגיות"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+              }}
+            />
+          )}
+        />
+      </div>
     </div>
   );
 }

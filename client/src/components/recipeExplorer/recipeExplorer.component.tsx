@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import MultypleAutocompleteAsync from "../../components/multypleAutocompleteAsync";
-//import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 
 export default function RecipeExplorer(): ReactElement | null {
   const { token } = React.useContext(AuthContext);
@@ -28,6 +27,10 @@ export default function RecipeExplorer(): ReactElement | null {
   React.useEffect(() => {
     let queryString = "?";
     queryString = limit > 0 ? queryString + `limit=${limit}&` : queryString;
+    queryString =
+      recipeName !== ""
+        ? queryString + `text=${recipeName.replace(" ", "+")}&`
+        : queryString;
     queryString =
       tags.length > 0
         ? queryString +
@@ -55,6 +58,7 @@ export default function RecipeExplorer(): ReactElement | null {
       })
       .then((res) => {
         const recipes: IRecipe[] = res.data as IRecipe[];
+        console.log("respone.data is: ", res.data);
         //if the amount of the results is less then the limit then there are no more results
         if (recipes.length < limit) {
           setNoMoreResults(true);

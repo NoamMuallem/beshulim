@@ -74,7 +74,7 @@ router.post("/", auth, upload.any(), async (req: any, res: any) => {
 
     res.status(201).send(response);
   } catch (e) {
-    res.status(400).send({ msg: e.message });
+    res.status(400).send({ msg: e.message ? e.message : e });
   }
 });
 

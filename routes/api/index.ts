@@ -11,8 +11,8 @@ import tagsRoutes from "./tags";
 import email from "./email";
 import recipeScrapper from "./recipeScrapper";
 
-router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
+router.use(express.json({ limit: "50mb" }));
+router.use(express.urlencoded({ extended: true, limit: "50mb" }));
 router.use(cors());
 router.use(
   helmet({

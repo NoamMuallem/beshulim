@@ -1,6 +1,7 @@
 import Tag from "../models/tagModel";
 import { UserSchema } from "models/userModel";
 import Recipe from "../models/recipeModel";
+import cloudinary from "../utils/cloudinary";
 
 export default class RecipeController {
   static async populateUserRecipes(
@@ -60,11 +61,21 @@ export default class RecipeController {
   ) {
     const recipeTags = data.tags;
     const dbWrits = [];
+    let uploadedResponse = null;
+    if (image) {
+      uploadedResponse = await cloudinary.uploader.upload(
+        image.replace(/(\r\n|\n|\r|\"|\')/gm, ""),
+        {
+          upload_preset: "dev_setups",
+        }
+      );
+    }
     let recipe: typeof Recipe = new Recipe({
       ...data, //copy over all the fields from req.body to the object
       tags: recipeTags,
       ...(image && { image }),
       owner: user._id,
+      ...(uploadedResponse && { image: uploadedResponse.url }),
     });
     dbWrits.push(recipe.save());
     recipeTags.forEach((tag: string) => {

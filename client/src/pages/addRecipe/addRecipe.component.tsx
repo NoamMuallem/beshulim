@@ -11,12 +11,14 @@ import { AuthContext } from "../../context/auth.context";
 import { UiContext } from "../../context/uiContext";
 import { Typography } from "@mui/material";
 import classes from "./addRecipe.style.module.scss";
+import FourthStep from "./fourthStep/fourthStep";
 
 export default function AddRecipe(): ReactElement | null {
   const [page, setPage] = React.useState<number | null>(1);
   const [name, setName] = React.useState<string>("");
   const [ingredients, setIngredients] = React.useState<string>("");
   const [directions, setDirections] = React.useState<string>("");
+  const [image, setImage] = React.useState<string | undefined>();
   const [tags, setTags] = React.useState<string[]>([]);
   const { token } = React.useContext(AuthContext);
   const { Screen } = React.useContext(UiContext);
@@ -52,7 +54,7 @@ export default function AddRecipe(): ReactElement | null {
     axios
       .post(
         "/api/recipes",
-        { data: recipeToSave },
+        { data: recipeToSave, image: JSON.stringify(image) },
         {
           headers: {
             "x-auth-token": token!,
@@ -65,6 +67,7 @@ export default function AddRecipe(): ReactElement | null {
         page && setPage(1);
         setIngredients("");
         setDirections("");
+        setImage(undefined);
         setTags([]);
       });
   };
@@ -168,6 +171,7 @@ export default function AddRecipe(): ReactElement | null {
               setInstructions={setDirections}
             />
           </div>
+          <FourthStep image={image} setImage={setImage} />
           <div style={{ margin: "1rem" }}>
             <Button onClick={handleSubmit}>Submit</Button>
           </div>

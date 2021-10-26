@@ -12,4 +12,5 @@ export interface IRecipe {
   tags: string[];
   _id?: string;
   createdAt?: string;
+  image?: string;
 }
